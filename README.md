@@ -14,4 +14,4 @@ Builds for boxes I know should work:
 - **WebTV Plus v2**: RW-2110, INT-W250, MAT-976
 - **Dish Network**: Dishplayer 7100, Dishplayer 7200
 
-This script was also used to help out a buddy of mine build a custom WebTV build.  You can find details here: http://turdinc.kicks-ass.net/Msntv/WebTV-MAME/echostar.html
+This script was also used to help out a buddy of mine build a custom WebTV build.  You can find details here: http://turdinc.kicks-ass.net/Msntv/WebTV-MAME/ , http://turdinc.kicks-ass.net/Msntv/WebTV-MAME/echostar.html
