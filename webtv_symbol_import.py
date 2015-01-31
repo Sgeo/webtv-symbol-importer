@@ -128,7 +128,7 @@ class WTV_SYMBOLS_LOADER:
                 read_length += 1
 
                 class_name_index = struct.unpack_from(">H",
-                    #symbol_file_contents, read_length)[0]
+                    symbol_file_contents, read_length)[0]
 
                 read_length += 2
 
