@@ -18,8 +18,7 @@ chunk_size = 4096
 
 class WTV_SYMBOLS_LOADER:
 
-    # Show a primpt to the user to select the symbol file and then set the
-    # symbol names in IDA.
+    # Show a prompt to the user allowing them to select the symbol file.
     def __init__(self):
         file_name = AskFile(0, "*.sym", "WebTV Build Symbol File")
 
@@ -30,7 +29,7 @@ class WTV_SYMBOLS_LOADER:
         else:
             Message("No symbol file selected. Exiting\n")
 
-    # Reads the entire symbol fi le into memory.
+    # Reads the entire symbol file into memory.
     def read_symbol_file(self, file_name, chunk_size=chunk_size):
         Message("Reading '" + file_name + "'\n")
 

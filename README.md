@@ -1,6 +1,6 @@
 ## IDA Symbol Importer for WebTV (MSNTV) Builds
 
-This is a basic Python script allowing you to reverse engineer WebTV builds by reading one of the three types of WebTV symbol files into IDA.  It assigns names to classes, functions and variables provided you've properly loaded a WebTV build into IDA and have the correct symbol file.
+This is a basic Python script that helps you reverse engineer WebTV builds by processing one of the three types of symbol files using IDA.  It assigns names to classes, functions and variables provided you've properly loaded a WebTV build into IDA and have the correct symbol file.
 
 I created this so I could study the hardware of the older WebTV boxes in an attempt to create a MIPS Linux build that will run on these boxes.  These boxes were discontinued September 2013 by Microsoft and are fairly cheap to purchase.
 
