@@ -85,8 +85,8 @@ class WTV_SYMBOLS_LOADER:
 
                 # Class names are a newline terminated list at the bottom of the
                 # file.
-                class_names = symbol_file_contents[class_start_index:]
-                    .split("\x0A")
+                class_names = \
+                   symbol_file_contents[class_start_index:].split("\x0A")
 
                 file_length = class_start_index
 
@@ -132,8 +132,8 @@ class WTV_SYMBOLS_LOADER:
 
                 read_length += 2
 
-                string_length = (symbol_file_contents[read_length:])
-                    .find("\x00")
+                string_length = \
+                   (symbol_file_contents[read_length:]).find("\x00")
 
                 object_name = symbol_file_contents[
                     read_length:(read_length + string_length)]
@@ -141,8 +141,8 @@ class WTV_SYMBOLS_LOADER:
                 read_length += string_length + 1
 
                 if class_name_index < len(class_names):
-                    object_name = class_names[class_name_index] + "::" +
-                        object_name;
+                    object_name = \
+                       class_names[class_name_index] + "::" + object_name;
             
             # The "TIMN" symbol file has the string length in front of the
             # object-name string.
@@ -157,8 +157,8 @@ class WTV_SYMBOLS_LOADER:
                 read_length += string_length
             # Otherwise we read a null-terminated object-name string.
             else:
-                string_length = (symbol_file_contents[read_length:])
-                    .find("\x00")
+                string_length = \
+                   (symbol_file_contents[read_length:]).find("\x00")
 
                 object_name = symbol_file_contents[
                     read_length:(read_length + string_length)]
