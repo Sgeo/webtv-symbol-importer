@@ -10,17 +10,21 @@
     Date: January 30th, 2015
 """
 
-from idaapi import * 
-import idautils
-import idc
+import sys
+import struct
+import re
 
 chunk_size = 4096
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+
 # Reads the entire symbol file into memory.
 def read_symbol_file(file_name, chunk_size=chunk_size):
-    Message("Reading '" + file_name + "'\n")
+    eprint("Reading '" + file_name + "'\n")
 
-    symbol_file_contents = "";
+    symbol_file_contents = b"";
 
     with open(file_name, "rb") as FILE:
         while True:
@@ -31,7 +35,7 @@ def read_symbol_file(file_name, chunk_size=chunk_size):
             else:
                 break
 
-    Message("Read " + str(len(symbol_file_contents)) + " bytes.\n")
+    eprint("Read " + str(len(symbol_file_contents)) + " bytes.\n")
 
     return symbol_file_contents
 
@@ -46,7 +50,7 @@ def read_symbols(file_name, chunk_size=chunk_size):
     read_length = 0
     file_length = len(symbol_file_contents)
 
-    Message("Parsing symbol file.\n")
+    eprint("Parsing symbol file.\n")
 
     # The symbol file format can be found by checking the first 4 bytes of
     # the file (magic)
@@ -63,20 +67,20 @@ def read_symbols(file_name, chunk_size=chunk_size):
     elif version_check == 1:
         symbol_file_version = 1
 
-        class_start_index = symbol_file_contents.rfind("\x00")
+        class_start_index = symbol_file_contents.rfind(b"\x00")
 
         if class_start_index > -1:
-            Message("Class name list at offset %x" % 
+            eprint("Class name list at offset %x" % 
                 class_start_index + "\n")
 
             # Class names are a newline terminated list at the bottom of the
             # file.
             class_names = \
-               symbol_file_contents[class_start_index:].split("\x0A")
+               symbol_file_contents[class_start_index:].split(b"\x0A")
 
             file_length = class_start_index
 
-            Message("Reducing symbol file length to " + 
+            eprint("Reducing symbol file length to " + 
                 str(file_length) + " bytes.\n")
 
         read_length = 12
@@ -87,7 +91,7 @@ def read_symbols(file_name, chunk_size=chunk_size):
         symbol_file_version = 2
         read_length = 8
 
-    Message("Reading symbols for symbol file of version '" +
+    eprint("Reading symbols for symbol file of version '" +
         str(symbol_file_version) + "'.\n")
 
     while(read_length < file_length):
@@ -119,7 +123,7 @@ def read_symbols(file_name, chunk_size=chunk_size):
             read_length += 2
 
             string_length = \
-               (symbol_file_contents[read_length:]).find("\x00")
+               (symbol_file_contents[read_length:]).find(b"\x00")
 
             object_name = symbol_file_contents[
                 read_length:(read_length + string_length)]
@@ -128,7 +132,7 @@ def read_symbols(file_name, chunk_size=chunk_size):
 
             if class_name_index < len(class_names):
                 object_name = \
-                   class_names[class_name_index] + "::" + object_name;
+                   class_names[class_name_index] + b"::" + object_name;
         
         # The "TIMN" symbol file has the string length in front of the
         # object-name string.
@@ -144,7 +148,7 @@ def read_symbols(file_name, chunk_size=chunk_size):
         # Otherwise we read a null-terminated object-name string.
         else:
             string_length = \
-               (symbol_file_contents[read_length:]).find("\x00")
+               (symbol_file_contents[read_length:]).find(b"\x00")
 
             object_name = symbol_file_contents[
                 read_length:(read_length + string_length)]
@@ -153,30 +157,32 @@ def read_symbols(file_name, chunk_size=chunk_size):
 
         symbols[object_address] = object_name
     
-    Message("Read '" + str(len(symbols)) + "' symbols.\n")
+    eprint("Read '" + str(len(symbols)) + "' symbols.\n")
 
     return symbols
 
 # Assign names to addresses based on a symbol list.
 def import_symbols(symbols):
-    Message("Importing symbols into IDA.\n")
+    eprint("Importing symbols into IDA.\n")
 
     for object_address in symbols.keys():
-        MakeNameEx(object_address, symbols[object_address], SN_NOWARN)
+        ghidra_name = symbols[object_address].decode('utf-8')
+        ghidra_name = re.sub(r'[^!-~]', '_', ghidra_name)
+        print(f"{ghidra_name} 0x{object_address:X}")
 
-    Message("Done importing.\n")
+    eprint("Done importing.\n")
 
 
 
-Message("START: Eric's symbol file loader.\n")
+eprint("START: Eric's symbol file loader.\n")
 
 # Show a prompt to the user allowing them to select the symbol file.
-file_name = AskFile(0, "*.sym", "WebTV Build Symbol File")
+file_name = sys.argv[1]
 
 if file_name != "":
     symbols = read_symbols(file_name)
 
     import_symbols(symbols)
 else:
-    Message("No symbol file selected. Exiting\n")
+    eprint("No symbol file selected. Exiting\n")
 
